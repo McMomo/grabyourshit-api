@@ -1,5 +1,4 @@
 import express from 'express'
-import admin from 'firebase-admin'
 import stationsRouter from './routes/stations'
 
 const app = express()

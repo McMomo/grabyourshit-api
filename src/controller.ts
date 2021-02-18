@@ -1,19 +1,19 @@
 import { Station, Helper } from './types'
-import admin from 'firebase-admin'
+import { Firestore } from '@google-cloud/firestore'
+
+let db: Firestore;
 
 if (process.env. npm_lifecycle_event === 'dev'){
-	const serviceAccount = require('../grabyourfireshit-6491c9b1f6e6.json')
-	admin.initializeApp({
-			credential: admin.credential.cert(serviceAccount)
+
+	db = new Firestore({
+		projectId: 'grabyourshit',
+		keyFilename: './grabyourshit-a553dc076e1a.json',
 	})
 
 } else {
-	admin.initializeApp({
-		credential: admin.credential.applicationDefault()
-	})
+	db = new Firestore()
 }
 
-const db = admin.firestore()
 
 const getStations = async () => { 
 	const collection = await db.collection('station').get()
