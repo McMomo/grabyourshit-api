@@ -3,9 +3,16 @@ import admin from 'firebase-admin'
 
 const serviceAccount = require('../grabyourfireshit-6491c9b1f6e6.json')
 
-admin.initializeApp({
-		credential: admin.credential.cert(serviceAccount)
-})
+if (process.env. npm_lifecycle_event === 'dev'){
+	admin.initializeApp({
+			credential: admin.credential.cert(serviceAccount)
+	})
+
+} else {
+	admin.initializeApp({
+		credential: admin.credential.applicationDefault()
+	})
+}
 
 const db = admin.firestore()
 
