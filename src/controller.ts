@@ -37,31 +37,34 @@ const getStation = async (req: any, res: any, next: Function) => {
 		.catch((err) => (res.status(500).json({ message: err.message })))
 }
 
-const toggleStation = async (req: any, res: any) => {
+const setStationStatus = async (req: any, res: any) => {
 	const stationRef =  db.collection('station').doc(req.params.id)
 	
-	let station: any = undefined;
-	await stationRef.get()
-		.then((value) => {
-			if (!value){
-				return res.status(404).json({ message: 'Cant find station'})
-			}
-			station = value?.data()
-		})
-		.catch((err) => (res.status(500).json({ message: err.message })))
 
 	try {
-		if (station?.isFilled){
+		let station: any = undefined;
+		await stationRef.get()
+			.then((value) => {
+				if (!value){
+					return res.status(404).json({ message: 'Cant find station'})
+				}
+				station = value?.data()
+			})
+
+
+		//only change status if its not the same
+		if (req.query.fill !== station?.isFilled){
 			stationRef.update({
-				isFilled: false,
+				isFilled: req.query.fill,
+				filledLastTime:(req.query.fill? Date.now(): station.filledLastTime)
 			})
 			res.status(200).json({ message: 'Field has been toggled ', hasUpdated: true})
 		} else {
-			res.status(200).json({ message: 'Field has been toggled allready ', hasUpdated: false})
+			res.status(200).json({ message: 'Please use a different status', hasUpdated: false})
 		}
 	} catch (err) {
 		res.status(500).json({ message: err.message })
 	}
 }
 
-export { getStations, getStation, toggleStation }
+export { getStations, getStation, setStationStatus }

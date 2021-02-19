@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { getStations, getStation, toggleStation } from '../controller'
+import { getStations, getStation, setStationStatus } from '../controller'
 
 
 const router = Router()
@@ -15,8 +15,12 @@ router.get('/:id', getStation, async (req: any, res: any) => {
 	res.json(res.station)
 })
 
-router.patch('/:id/isFilled', async (req: any, res: any) => {
-	toggleStation(req, res)
+router.patch('/:id', async (req: any, res: any) => {
+	if (req.query.fill){
+		setStationStatus(req, res)
+	} else {
+		res.status(500).json({ message: 'add valid queryparams' })
+	}
 })
 
 module.exports = router
