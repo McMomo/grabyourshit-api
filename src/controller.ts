@@ -37,4 +37,15 @@ const getStation = async (req: any, res: any, next: Function) => {
 		.catch((err) => (res.status(500).json({ message: err.message })))
 }
 
-export { getStations, getStation }
+const whitelist = ['localhost:5000', 'grabyourshit.de']
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+export { getStations, getStation, corsOptions }

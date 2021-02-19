@@ -5,6 +5,8 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^4.9.4",
+    "@types/cors": "^2.8.10",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "ts-node": "^9.1.1",
