@@ -39,7 +39,6 @@ const getStation = async (req: any, res: any, next: Function) => {
 
 const setStationStatus = async (req: any, res: any) => {
 	const stationRef =  db.collection('station').doc(req.params.id)
-	
 
 	try {
 		let station: any = undefined;
@@ -67,4 +66,15 @@ const setStationStatus = async (req: any, res: any) => {
 	}
 }
 
-export { getStations, getStation, setStationStatus }
+const whitelist = ['localhost:5000', 'grabyourshit.de']
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+export { getStations, getStation, corsOptions, setStationStatus }
