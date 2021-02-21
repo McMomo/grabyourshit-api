@@ -19,7 +19,7 @@ const getStations = async () => {
 	const collection = await db.collection('station').get()
 	const stations: Array<any> = []
 	collection.forEach((doc: any) => {
-			let docObj = {[doc.id]: doc.data()}
+			let docObj = { 'id':doc.id, ...doc.data()}
 			stations.push(docObj)
 		});
 	return stations
