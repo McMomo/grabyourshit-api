@@ -50,11 +50,10 @@ const setStationStatus = async (req: any, res: any) => {
 				station = value?.data()
 			})
 
-
 		//only change status if its not the same
 		if (req.query.fill !== station?.isFilled){
 			stationRef.update({
-				isFilled: req.query.fill,
+				isFilled: (req.query.fill === 'true'),
 				filledLastTime:(req.query.fill? Date.now(): station.filledLastTime)
 			})
 			res.status(200).json({ message: 'Field has been toggled ', hasUpdated: true})
