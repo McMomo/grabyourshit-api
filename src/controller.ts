@@ -1,5 +1,11 @@
 import { Station, Helper } from './types'
 import { Firestore } from '@google-cloud/firestore'
+import nodemailer from 'nodemailer'
+
+import { emailText, emailHTML } from './mailerContent' 
+
+const _email = 'empty@grabyourshit.de'
+const _password = 'fFJ?hv&iY5FWH#4qBT!'
 
 let db: Firestore;
 
@@ -14,12 +20,64 @@ if (process.env. npm_lifecycle_event === 'dev'){
 	db = new Firestore()
 }
 
+let transporter = nodemailer.createTransport({
+	host: 'smtp.ionos.de',
+	port: 465,
+	secure: true,
+	auth: {
+    	user: _email,
+		pass: _password
+  	}
+})
+
+transporter.verify(function(error, success) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.info("Server is ready to take our messages");
+  }
+});
+
+const getHelpers = async (station: Station) => {
+	const mails: any[] = []
+
+	for (const helper of station.responsible){
+		await helper.get()
+			.then((value: any) => {
+				mails.push(value.data())
+		})	
+	}
+	return mails
+}
+
+const sendMail = async (id: string, station: Station) => {
+
+	const helper = await getHelpers(station)
+
+	const toMails = helper.map((helper: any) => helper.email)
+
+	const to = toMails.join(',')
+
+	const mailOptions = {
+		from: `grabyourshit ${_email}`,
+		to: to,
+		subject: 'grabyourshit - eine Station wurde als leer gemeldet',
+		text: emailText(id, station.nearestAddress),
+		html: emailHTML(id, station.nearestAddress)
+	}
+
+	transporter.sendMail(mailOptions, (err) => {
+		if (err) {
+			console.error('Server did not send message')
+		}
+	})
+}
 
 const getStations = async () => { 
 	const collection = await db.collection('station').get()
 	const stations: Array<any> = []
 	collection.forEach((doc: any) => {
-			let docObj = { 'id':doc.id, ...doc.data()}
+			let docObj = { 'id':doc.id, ...doc.data(), responsible:[]}
 			stations.push(docObj)
 		});
 	return stations
@@ -31,7 +89,7 @@ const getStation = async (req: any, res: any, next: Function) => {
 			if (!value){
 				return res.status(404).json({ message: 'Cant find station'})
 			}
-			res.station = value.data()
+			res.station = {...value.data(), responsible:[]}
 			next()
 		})
 		.catch((err) => (res.status(500).json({ message: err.message })))
@@ -39,6 +97,7 @@ const getStation = async (req: any, res: any, next: Function) => {
 
 const setStationStatus = async (req: any, res: any) => {
 	const stationRef =  db.collection('station').doc(req.params.id)
+	const fill = req.query.fill === 'true'
 
 	try {
 		let station: any = undefined;
@@ -51,11 +110,17 @@ const setStationStatus = async (req: any, res: any) => {
 			})
 
 		//only change status if its not the same
-		if (req.query.fill !== station?.isFilled){
+		if (fill !== station?.isFilled){
 			stationRef.update({
-				isFilled: (req.query.fill === 'true'),
+				isFilled: fill,
 				filledLastTime:(req.query.fill? Date.now(): station.filledLastTime)
 			})
+
+			//only send if station set to false
+			if (station?.isFilled && !fill) {
+				sendMail(req.params.id, station)
+			}
+
 			res.status(200).json({ message: 'Field has been toggled ', hasUpdated: true})
 		} else {
 			res.status(200).json({ message: 'Please use a different status', hasUpdated: false})

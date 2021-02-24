@@ -3,12 +3,11 @@ export type Station = {
   isFilled: boolean;
   filledLastTime: number;
   location: Array<string>;
-  nearestAddress?: Address;
-  responsible: Array<Helper>;  
+  nearestAddress: Address;
+  responsible: Array<any>; //should be Docreference or Helper
 }
 
 export type Address = {
-  country?: string;
   city: string;
   street: string;
   zip?: string;
