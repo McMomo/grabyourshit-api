@@ -23,7 +23,7 @@ let secret: {email:string, password: string}
 
 const initMailer = async () => {
 
-	const secretName = 'projects/449655753817/secrets/email_empty_login/versions/latest'
+	const secretName = 'projects/grabyourshit/secrets/email_empty_login/versions/latest'
 	const secretClient = new SecretManagerServiceClient()
 
 	async function accessSecretVersion(){
