@@ -12,6 +12,13 @@
     google-gax "^2.9.2"
     protobufjs "^6.8.6"
 
+"@google-cloud/secret-manager@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/secret-manager/-/secret-manager-3.4.0.tgz#a3ee40845f2c1bef8ab6f80cfe964bc0948dd238"
+  integrity sha512-GH1YUeELu310TVY/Mmler8ND2ZG10wBo6nr5cOwr+vgA+uEKbw/6v4ns5ETO4lLfFRWHQxWxvBEtuwTmubYTmQ==
+  dependencies:
+    google-gax "^2.9.2"
+
 "@grpc/grpc-js@~1.2.0":
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.2.7.tgz#d291c23ed4dfd794366d91c016e9bef2b5f7663e"

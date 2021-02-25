@@ -1,11 +1,9 @@
 import { Station, Helper } from './types'
 import { Firestore } from '@google-cloud/firestore'
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager'
 import nodemailer from 'nodemailer'
-
 import { emailText, emailHTML } from './mailerContent' 
 
-const _email = 'empty@grabyourshit.de'
-const _password = process.env._EMAIL ?? ''
 
 let db: Firestore;
 
@@ -13,20 +11,38 @@ if (process.env. npm_lifecycle_event === 'dev'){
 
 	db = new Firestore({
 		projectId: 'grabyourshit',
-		keyFilename: './grabyourshit-a553dc076e1a.json',
+		keyFilename: './grabyourshit-a553dc076e1a.json'
 	})
 
 } else {
 	db = new Firestore()
 }
 
+const secretName = 'projects/449655753817/secrets/email_empty_login/versions/latest'
+const secretClient = new SecretManagerServiceClient()
+
+let secret: any = {}
+
+async function accessSecretVersion(){
+	const [version] = await secretClient.accessSecretVersion({
+    	name: secretName,
+  	});
+
+	// Extract the payload as a string.
+	const payload = version?.payload?.data?.toString();
+
+	secret = payload;
+}
+
+accessSecretVersion()
+
 let transporter = nodemailer.createTransport({
 	host: 'smtp.ionos.de',
 	port: 465,
 	secure: true,
 	auth: {
-    	user: _email,
-		pass: _password
+    	user: secret?._email,
+		pass: secret?._password
   	}
 })
 
@@ -59,7 +75,7 @@ const sendMail = async (id: string, station: Station) => {
 	const to = toMails.join(',')
 
 	const mailOptions = {
-		from: `grabyourshit ${_email}`,
+		from: `grabyourshit ${secret._email}`,
 		to: to,
 		subject: 'grabyourshit - eine Station wurde als leer gemeldet',
 		text: emailText(id, station.nearestAddress),
