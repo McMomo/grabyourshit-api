@@ -19,53 +19,49 @@ if (process.env. npm_lifecycle_event === 'dev'){
 }
 
 let transporter: any;
-let secret: {email:string, password: string}
+let secret: {email?:string, password?: string} = {}
 
-const initMailer = async () => {
 
-	const secretName = 'projects/grabyourshit/secrets/email_empty_login/versions/latest'
-	const secretClient = new SecretManagerServiceClient()
+const secretName = 'projects/449655753817/secrets/email_empty_login/versions/latest'
+const secretClient = new SecretManagerServiceClient()
 
-	async function accessSecretVersion(){
-		const [version] = await secretClient.accessSecretVersion({
-	    	name: secretName,
-	  	});
+async function accessSecretVersion(){
+	const [version] = await secretClient.accessSecretVersion({
+    	name: secretName,
+  	});
 
-		// Extract the payload as a string.
-		const payload = version?.payload?.data?.toString();
+	// Extract the payload as a string.
+	const payload = version?.payload?.data?.toString();
 
-		if (payload){
-			return JSON.parse(payload);
-		} 
-	}
-
-	await accessSecretVersion()
-		.then((value) => {
-			console.info('#' + value)
-			secret = value
-		})
-		.catch((err) => console.error(err))
-
-	transporter = nodemailer.createTransport({
-		host: 'smtp.ionos.de',
-		port: 465,
-		secure: true,
-		auth: {
-	    	user: secret?.email,
-			pass: secret?.password
-	  	}
-	})
-
-	transporter.verify(function(error: any, success: any) {
-	  if (error) {
-	    console.error(error);
-	  } else {
-	    console.info("Server is ready to take our messages");
-	  }
-	});
+	if (payload){
+		return JSON.parse(payload);
+	} 
 }
 
-initMailer()
+accessSecretVersion()
+	.then((value) => {
+		console.info('#' + value)
+		secret = value
+	})
+	.catch((err) => console.error(err))
+
+transporter = nodemailer.createTransport({
+	host: 'smtp.ionos.de',
+	port: 465,
+	secure: true,
+	auth: {
+    	user: secret?.email,
+		pass: secret?.password
+  	}
+})
+
+transporter.verify(function(error: any, success: any) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.info("Server is ready to take our messages");
+  }
+});
 
 const getHelpers = async (station: Station) => {
 	const mails: any[] = []
