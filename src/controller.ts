@@ -34,10 +34,14 @@ const initMailer = async () => {
 		// Extract the payload as a string.
 		const payload = version?.payload?.data?.toString();
 
-		if (payload) secret = JSON.parse(payload);
+		if (payload){
+			secret = JSON.parse(payload);
+		} 
+		console.info(payload)
 	}
 
 	await accessSecretVersion()
+		.catch((err) => console.error(err))
 
 	transporter = nodemailer.createTransport({
 		host: 'smtp.ionos.de',
@@ -88,11 +92,15 @@ const sendMail = async (id: string, station: Station) => {
 		html: emailHTML(id, station.nearestAddress)
 	}
 
-	transporter.sendMail(mailOptions, (err: any) => {
-		if (err) {
-			console.error('Server did not send message')
-		}
-	})
+	try {
+		transporter.sendMail(mailOptions, (err: any) => {
+			if (err) {
+				console.error('Server did not send message')
+			}
+		})
+	} catch (err) {
+		console.error(err)
+	}
 }
 
 const getStations = async () => { 
