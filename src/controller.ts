@@ -31,7 +31,7 @@ async function accessSecretVersion(){
 	// Extract the payload as a string.
 	const payload = version?.payload?.data?.toString();
 
-	secret = payload;
+	if (payload) secret = JSON.parse(payload);
 }
 
 accessSecretVersion()
