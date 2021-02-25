@@ -23,7 +23,7 @@ let secret: {email:string, password: string}
 
 const initMailer = async () => {
 
-	const secretName = 'projects/grabyourshit/secrets/email_empty_login/versions/latest'
+	const secretName = 'projects/449655753817/secrets/email_empty_login/versions/latest'
 	const secretClient = new SecretManagerServiceClient()
 
 	async function accessSecretVersion(){
@@ -81,7 +81,7 @@ const sendMail = async (id: string, station: Station) => {
 	const to = toMails.join(',')
 
 	const mailOptions = {
-		from: `grabyourshit ${secret.email}`,
+		from: `grabyourshit ${secret?.email}`,
 		to: to,
 		subject: 'grabyourshit - eine Station wurde als leer gemeldet',
 		text: emailText(id, station.nearestAddress),
