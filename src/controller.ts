@@ -35,12 +35,15 @@ const initMailer = async () => {
 		const payload = version?.payload?.data?.toString();
 
 		if (payload){
-			secret = JSON.parse(payload);
+			return JSON.parse(payload);
 		} 
-		console.info(payload)
 	}
 
 	await accessSecretVersion()
+		.then((value) => {
+			console.info('#' + value)
+			secret = value
+		})
 		.catch((err) => console.error(err))
 
 	transporter = nodemailer.createTransport({
