@@ -32,6 +32,7 @@ async function accessSecretVersion(){
 	const payload = version?.payload?.data?.toString();
 
 	if (payload) secret = JSON.parse(payload);
+	console.info(payload)
 }
 
 accessSecretVersion()
