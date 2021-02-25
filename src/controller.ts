@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 import { emailText, emailHTML } from './mailerContent' 
 
 const _email = 'empty@grabyourshit.de'
-const _password = 'fFJ?hv&iY5FWH#4qBT!'
+const _password = process.env._EMAIL ?? ''
 
 let db: Firestore;
 
