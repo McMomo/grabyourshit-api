@@ -18,42 +18,47 @@ if (process.env. npm_lifecycle_event === 'dev'){
 	db = new Firestore()
 }
 
-const secretName = 'projects/449655753817/secrets/email_empty_login/versions/latest'
-const secretClient = new SecretManagerServiceClient()
+let transporter: any;
+let secret: {email:string, password: string}
 
-let secret: any = {}
+const initMailer = async () => {
 
-async function accessSecretVersion(){
-	const [version] = await secretClient.accessSecretVersion({
-    	name: secretName,
-  	});
+	const secretName = 'projects/449655753817/secrets/email_empty_login/versions/latest'
+	const secretClient = new SecretManagerServiceClient()
 
-	// Extract the payload as a string.
-	const payload = version?.payload?.data?.toString();
+	async function accessSecretVersion(){
+		const [version] = await secretClient.accessSecretVersion({
+	    	name: secretName,
+	  	});
 
-	if (payload) secret = JSON.parse(payload);
-	console.info(payload)
+		// Extract the payload as a string.
+		const payload = version?.payload?.data?.toString();
+
+		if (payload) secret = JSON.parse(payload);
+	}
+
+	await accessSecretVersion()
+
+	transporter = nodemailer.createTransport({
+		host: 'smtp.ionos.de',
+		port: 465,
+		secure: true,
+		auth: {
+	    	user: secret?.email,
+			pass: secret?.password
+	  	}
+	})
+
+	transporter.verify(function(error: any, success: any) {
+	  if (error) {
+	    console.error(error);
+	  } else {
+	    console.info("Server is ready to take our messages");
+	  }
+	});
 }
 
-accessSecretVersion()
-
-let transporter = nodemailer.createTransport({
-	host: 'smtp.ionos.de',
-	port: 465,
-	secure: true,
-	auth: {
-    	user: secret?._email,
-		pass: secret?._password
-  	}
-})
-
-transporter.verify(function(error, success) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.info("Server is ready to take our messages");
-  }
-});
+initMailer()
 
 const getHelpers = async (station: Station) => {
 	const mails: any[] = []
@@ -76,14 +81,14 @@ const sendMail = async (id: string, station: Station) => {
 	const to = toMails.join(',')
 
 	const mailOptions = {
-		from: `grabyourshit ${secret._email}`,
+		from: `grabyourshit ${secret.email}`,
 		to: to,
 		subject: 'grabyourshit - eine Station wurde als leer gemeldet',
 		text: emailText(id, station.nearestAddress),
 		html: emailHTML(id, station.nearestAddress)
 	}
 
-	transporter.sendMail(mailOptions, (err) => {
+	transporter.sendMail(mailOptions, (err: any) => {
 		if (err) {
 			console.error('Server did not send message')
 		}
