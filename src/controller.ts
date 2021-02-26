@@ -40,7 +40,6 @@ const initMailer = async() => {
 
 	await accessSecretVersion()
 		.then((value) => {
-			console.info('#' + value)
 			secret = value
 		})
 		.catch((err) => console.error(err))
