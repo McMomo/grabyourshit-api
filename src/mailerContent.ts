@@ -1,8 +1,10 @@
+const URL = 'https://grabyourshit.de/'
+
 export const emailText = (id: string, address: any) => `Hallo lieber Unterstützer, 
 		die Station in der/ im ${address.street} in ${address.city}	, wurde als leer gemeldet.
 		Bitte fülle die Station zeitnah wieder auf, damit unsere Stadt sauber bleibt. 
 		Wenn du die Station aufgefüllt hast rufe bitte den folgenden Link auf und bestätige dort deine Aktion.
-		http://grabyourshit.de/#/supporter/${id}
+		${URL}#/supporter/${id}
 		Danke für deine Unterstützung, wie zählen auf dich 🐶!`
 
 export const emailHTML = (id: string, address: any) => `<!doctype html>
@@ -28,7 +30,7 @@ export const emailHTML = (id: string, address: any) => `<!doctype html>
 			                Bitte fülle die Station zeitnah wieder auf, damit unsere Stadt sauber bleibt. 
 			                </p>
 			                <p>
-			                <a href="http://grabyourshit.de/#/supporter/${id}">
+			                <a href="${URL}#/supporter/${id}">
 			                    Wenn du die Station aufgefüllt hast rufe bitte diesen Link auf und bestätige dort deine Aktion.
 			                </a>
 			                <br><br>
