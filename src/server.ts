@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors'
-import { corsOptions } from './controller'
 
 import stationsRouter from './routes/stations'
 
