@@ -140,7 +140,7 @@ class Controller {
 
 	async setStationStatus(req: any, res: any) {
 		const stationRef =  this.db.collection('station').doc(req.params.id)
-		const fill = req.query.fill === 'true'
+		const fill = req.params.fill === 'true'
 
 		try {
 			let station: any = undefined;
@@ -156,7 +156,7 @@ class Controller {
 			if (fill !== station?.isFilled){
 				stationRef.update({
 					isFilled: fill,
-					filledLastTime:(req.query.fill? Date.now(): station.filledLastTime)
+					filledLastTime:(req.params.fill? Date.now(): station.filledLastTime)
 				})
 
 				//only send if station set to false

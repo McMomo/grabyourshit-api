@@ -18,12 +18,8 @@ router.get('/:id', async (req: any, res: any) => {
 		.catch((err) => res.status(500).json({ message: err.message }))
 })
 
-router.patch('/:id', async (req: any, res: any) => {
-	if (req.query.fill){
-		controller.setStationStatus(req, res)
-	} else {
-		res.status(500).json({ message: 'add valid queryparams' })
-	}
+router.patch('/:id/:fill', async (req: any, res: any) => {
+	controller.setStationStatus(req, res)
 })
 
 export default router
