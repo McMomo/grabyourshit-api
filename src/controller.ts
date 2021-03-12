@@ -25,7 +25,7 @@ class Controller {
 
 		this.transporter = {}
 
-		this.initMailer()
+		// this.initMailer()
 	}
 
 	static getInstance(){
